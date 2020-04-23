@@ -7,6 +7,7 @@
 #include <concepts>
 #include <type_traits>
 #include <functional>
+#include <cstddef>
 
 template <std::ranges::range... R>
 class zip_range {
@@ -153,6 +154,7 @@ public:
         
         using value_type = std::tuple<std::ranges::range_value_t<R>...>;
         using reference_type = std::tuple<std::ranges::range_reference_t<R>...>;
+        using difference_type = std::ptrdiff_t;
 
         iterator_t& operator++() {
             increment();
@@ -266,5 +268,8 @@ template <class... T>
 auto zip(T&... t) {
     return zip_range<T...>{t...};
 }
+
+template <class... Args>
+constexpr bool std::ranges::enable_borrowed_range<zip_range<Args...>> = true;
 
 #endif
