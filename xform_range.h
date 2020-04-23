@@ -5,8 +5,10 @@
 #include <iterator>
 #include <type_traits>
 #include <concepts>
+#include "range_utils_common.h"
 
 template <std::ranges::input_range R, std::invocable<typename std::ranges::range_reference_t<R>> Fp>
+requires std::ranges::viewable_range<R>
 class xform_range_t {
     R range;
     Fp fp;
@@ -141,8 +143,12 @@ public:
 };
 
 template <class R, class F>
-auto xform_range(R r, F f = F{}) {
-    return xform_range_t<R, F>{r, f};
+auto xform(R&& r, F f = F{}) {
+    return xform_range_t<typename remove_rvalue_ref<R&&>::type, F>
+        {std::forward<R>(r), f};
 }
+
+template <class... Args>
+constexpr bool std::ranges::enable_borrowed_range<xform_range_t<Args...>> = true;
 
 #endif

@@ -8,10 +8,11 @@
 #include <type_traits>
 #include <functional>
 #include <cstddef>
+#include "range_utils_common.h"
 
-template <std::ranges::range... R>
+template <std::ranges::viewable_range... R>
 class zip_range {
-    std::tuple<R&...> ranges;
+    std::tuple<R...> ranges;
     //these next few functions are fairly ugly, but they're
     //just accumulating each of the begin()s/end()s in a tuple
     template <class T, unsigned N, class First, class... Rest>
@@ -261,7 +262,7 @@ public:
 
     };
 
-    zip_range(R&... r) : ranges{r...} {}
+    zip_range(R... r) : ranges{r...} {}
     iterator_t begin() const {
         return iterator_t{begin_impl<std::tuple<>, 0, R...>(std::tuple<>())};
     }
@@ -271,8 +272,9 @@ public:
 };
 
 template <class... T>
-auto zip(T&... t) {
-    return zip_range<T...>{t...};
+auto zip(T&&... t) {
+    return zip_range<typename remove_rvalue_ref<T&&>::type...>
+        {std::forward<T>(t)...};
 }
 
 template <class... Args>
