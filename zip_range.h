@@ -22,7 +22,7 @@ class zip_range {
     }
     template <class T, unsigned N>
     auto begin_impl(T&& t) const {
-        return t;
+        return std::move(t);
     }
     template <class T, unsigned N, class First, class... Rest>
     auto end_impl(T&& t) const {
@@ -152,7 +152,7 @@ public:
         iterator_t& operator=(const iterator_t&) = default;
         iterator_t& operator=(iterator_t&&) = default;
         
-        using value_type = std::tuple<std::ranges::range_value_t<R>...>;
+        using value_type = std::tuple<std::ranges::range_reference_t<R>...>;
         using reference_type = std::tuple<std::ranges::range_reference_t<R>...>;
         using difference_type = std::ptrdiff_t;
 
@@ -166,12 +166,14 @@ public:
             return ret;
         }
         // Only provide decrementing if it's supported
-        typename std::enable_if<bidirectional,
+        template <class I = iterator_t>
+        typename std::enable_if<I::bidirectional,
         iterator_t&>::type operator--() {
             decrement();
             return *this;
         }
-        typename std::enable_if<bidirectional,
+        template <class I = iterator_t>
+        typename std::enable_if<I::bidirectional,
         iterator_t&>::type operator--(int) {
             iterator_t ret{*this};
             --(*this);
@@ -208,45 +210,49 @@ public:
         }
 
         // Only provide </<=/>/>= if they're supported
-        typename std::enable_if<ordered,
+        template <class I = iterator_t>
+        typename std::enable_if<I::ordered,
         bool>::type operator<(const iterator_t& other) const {
             return all<std::less<>>(other);
         }
-        typename std::enable_if<ordered,
+        template <class I = iterator_t>
+        typename std::enable_if<I::ordered,
         bool>::type operator>=(const iterator_t& other) const {
             return !(*this < other);
         }
-        typename std::enable_if<ordered,
+        template <class I = iterator_t>
+        typename std::enable_if<I::ordered,
         bool>::type operator>(const iterator_t& other) const {
             return !(*this == other) && any<std::greater<>>(other);
         }
-        typename std::enable_if<ordered,
+        template <class I = iterator_t>
+        typename std::enable_if<I::ordered,
         bool>::type operator<=(const iterator_t& other) const {
             return !(*this > other);
         }
 
         // Only provide addition/subtraction if they're supported
-        template <class T>
-        typename std::enable_if<random_access,
+        template <class T, class I = iterator_t>
+        typename std::enable_if<I::random_access,
         iterator_t&>::type operator+=(const T& rhs) {
             add(rhs);
             return *this;
         }
-        template <class T>
-        typename std::enable_if<random_access,
+        template <class T, class I = iterator_t>
+        typename std::enable_if<I::random_access,
         iterator_t&>::type operator-=(const T& rhs) {
             add(-rhs);
             return *this;
         }
-        template <class T>
-        typename std::enable_if<random_access,
+        template <class T, class I = iterator_t>
+        typename std::enable_if<I::random_access,
         iterator_t>::type operator+(const T& rhs) const {
             iterator_t ret{*this};
             ret += rhs;
             return ret;
         }
-        template <class T>
-        typename std::enable_if<random_access,
+        template <class T, class I = iterator_t>
+        typename std::enable_if<I::random_access,
         iterator_t>::type operator-(const T& rhs) const {
             iterator_t ret{*this};
             ret -= rhs;
