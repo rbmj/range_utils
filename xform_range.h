@@ -156,10 +156,10 @@ namespace range_utils {
 
 }
 #ifdef RANGE_UTILS_USE_RANGEv3
-    template <class T, class U>
-    constexpr bool ranges::enable_view<range_utils::xform_range_t<T, U>> = true;
+template <class T, class U>
+constexpr bool ranges::enable_view<range_utils::xform_range_t<T, U>> = true;
 #else
-    template <class... Args>
-    constexpr bool std::ranges::enable_borrowed_range<xform_range_t<Args...>> = true;
+template <class... Args>
+constexpr bool std::ranges::enable_borrowed_range<range_utils::xform_range_t<Args...>> = true;
 #endif
 #endif

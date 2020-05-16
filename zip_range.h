@@ -286,7 +286,7 @@ struct ranges::ext::enable_view<range_utils::zip_range<Args...>> {
     static constexpr bool value = true;
 };
 #else
-    template <class... Args>
-    constexpr bool std::ranges::enable_borrowed_range<zip_range<Args...>> = true;
+template <class... Args>
+constexpr bool std::ranges::enable_borrowed_range<range_utils::zip_range<Args...>> = true;
 #endif
 #endif

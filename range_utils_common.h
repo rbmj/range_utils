@@ -8,7 +8,7 @@ namespace range_utils {
 }
 #else
 #include <ranges>
-namespace range_util {
+namespace range_utils {
 	namespace ranges = std::ranges;
 }
 #endif
