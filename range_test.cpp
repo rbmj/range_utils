@@ -3,6 +3,8 @@
 #include "zip_range.h"
 #include "xform_range.h"
 
+using namespace range_utils;
+
 int main() {
     int x[] = {1, 2, 3, 4, 5};
     float f[] = {1.1, 1.2, 1.3, 1.4, 1.5};
