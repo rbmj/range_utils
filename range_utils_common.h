@@ -4,18 +4,18 @@
 #ifdef RANGE_UTILS_USE_RANGEv3
 #include <range/v3/range/concepts.hpp>
 namespace range_utils {
-	namespace ranges = ::ranges;
+    namespace ranges = ::ranges;
 }
 #else
 #include <ranges>
 namespace range_utils {
-	namespace ranges = std::ranges;
+    namespace ranges = std::ranges;
 }
 #endif
 
 namespace range_utils {
-	template <class T> struct remove_rvalue_ref { typedef T type; };
-	template <class T> struct remove_rvalue_ref<T&> { typedef T& type; };
-	template <class T> struct remove_rvalue_ref<T&&> { typedef T type; };
+    template <class T> struct remove_rvalue_ref { typedef T type; };
+    template <class T> struct remove_rvalue_ref<T&> { typedef T& type; };
+    template <class T> struct remove_rvalue_ref<T&&> { typedef T type; };
 }
 #endif
