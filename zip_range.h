@@ -13,6 +13,8 @@ namespace range_utils {
 
     template <ranges::viewable_range... R>
     class zip_range {
+        //ugly kludge so we can have a default constructor
+        static std::tuple<std::remove_reference<R>...> default_value;
         std::tuple<R...> ranges;
         //these next few functions are fairly ugly, but they're
         //just accumulating each of the begin()s/end()s in a tuple
@@ -37,6 +39,7 @@ namespace range_utils {
             return std::move(t);
         }
     public:
+	zip_range() : ranges(default_value) {}
         using zip_range_t = zip_range<R...>;
         class iterator_t {
             friend class zip_range<R...>;
@@ -47,9 +50,9 @@ namespace range_utils {
             template <unsigned N>
             using subiter_t = decltype(std::get<N>(iterators));
             template <unsigned N>
-            using subiter_ref_t = std::iter_reference_t<subiter_t<N>>;
+            using subiter_ref_t = ranges::iter_reference_t<subiter_t<N>>;
             template <unsigned N>
-            using subiter_value_t = std::iter_value_t<subiter_t<N>>;
+            using subiter_value_t = ranges::iter_value_t<subiter_t<N>>;
 
             //the number of subiterators
             static constexpr unsigned num_elements =
@@ -57,7 +60,7 @@ namespace range_utils {
             //do all subiterators support </<=/>/>=?
             static constexpr bool ordered =
                 std::conjunction<std::integral_constant<bool,
-                std::totally_ordered<R>>...>::value;
+                concepts::totally_ordered<R>>...>::value;
             //are all subiterators bidirectional?
             static constexpr bool bidirectional =
                 std::conjunction<std::integral_constant<bool,

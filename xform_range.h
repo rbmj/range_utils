@@ -9,7 +9,7 @@
 namespace range_utils {
 
 #ifndef _MSC_VER
-    template <ranges::input_range R, std::invocable<typename ranges::range_reference_t<R>> Fp>
+    template <ranges::input_range R, concepts::invocable<typename ranges::range_reference_t<R>> Fp>
     requires ranges::viewable_range<R>
 #else
     //disable concept check for this on MSVC because the compiler chokes
@@ -22,10 +22,10 @@ namespace range_utils {
         class iterator_t {
             friend class xform_range_t<R, Fp>;
             using wrapped_t = typename ranges::iterator_t<R>;
-            using wrapped_ref_t = std::iter_reference_t<wrapped_t>;
-            using wrapped_value_t = std::iter_value_t<wrapped_t>;
+            using wrapped_ref_t = ranges::iter_reference_t<wrapped_t>;
+            using wrapped_value_t = ranges::iter_value_t<wrapped_t>;
 
-            static constexpr bool ordered = std::totally_ordered<wrapped_t>;
+            static constexpr bool ordered = concepts::totally_ordered<wrapped_t>;
             static constexpr bool bidirectional = ranges::bidirectional_range<R>;
             static constexpr bool random_access = ranges::random_access_range<R>;
 
